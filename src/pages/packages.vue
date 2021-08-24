@@ -3,22 +3,22 @@
         <Headers></Headers>
            <section class="_banner-bg">
                <div class="container container-search">
-                  <Search @handleSearch="handleSearch"></Search>
+                  <Search @handleSearch="handleSearch" :searchKeys="searchKey"></Search>
                </div>
            </section>
         <section class="main">
            <section class="container package-list">
-              <div class="package-number">RESULTS <span>19663</span> packages</div>
+              <div class="package-number">RESULTS <span>{{packageList.length}}</span> packages</div>
               <ul>
                   <li v-for="item in packageList" :key="item.name">
-                      <div class="name" @click="handleEnterDetail">{{item.name}}</div>
-                      <p class="describe">{{item.describe}}</p>
+                      <div class="name" @click="handleEnterDetail (item.name)">{{item.name}}</div>
+                      <p class="describe">{{item.description}}</p>
                       <div class="version-info">
                         <div class="version">v<span></span>{{item.version}}</div>&#x3000;
-                        <div class="time">Updated: {{item.time}}</div>&#x3000;
-                        <div class="href">{{item.href}}</div>&#x3000;
+                        <div class="time">Updated: {{item.createdAt}}</div>&#x3000;
+                        <div class="href">{{item.authors}}</div>&#x3000;
                         <div class="tagList">
-                            <div  v-for="ele in item.tagList" :key="ele">{{ele}}</div>
+                            <div  v-for="ele in item.tag" :key="ele">{{ele}}</div>
                         </div>
                       </div>
                   </li>
@@ -26,7 +26,8 @@
             <el-pagination
             background
             layout="prev, pager, next"
-            :total="1000">
+            @current-change="handleCurrentChange"
+            :total="total">
             </el-pagination>
            </section>
         </section>
@@ -37,6 +38,8 @@
 import Headers from "../components/Header.vue"
 import Search from "../components/Searchs.vue"
 import Footers from "../components/Footer.vue"
+import { onMounted,  ref} from 'vue';
+import { useRouter } from 'vue-router';
 export default {
     components: {
         Headers,
@@ -44,50 +47,51 @@ export default {
         Footers
     },
     setup() {
-        return {
-            packageList: [
-                {
-                    name: "flutter_bloc",
-                    describe: "Flutter Widgets that make it easy to implement the BLoC (Business Logic Component) design pattern. Built to be used with the bloc state management package.",
-                    version: "7.0",
-                    time: "Jul 29, 2021",
-                    href: "bloclibrary.dev",
-                    tagList: [
-                        "Flutter Favorite",
-                        "Null safety"
-                    ]
-                },
-                {
-                    name: "flutter_bloc",
-                    describe: "Flutter Widgets that make it easy to implement the BLoC (Business Logic Component) design pattern. Built to be used with the bloc state management package.",
-                    version: "7.0",
-                    time: "Jul 29, 2021",
-                    href: "bloclibrary.dev",
-                    tagList: [
-                        "Flutter Favorite",
-                        "Null safety"
-                    ]
-                },
-                {
-                    name: "flutter_bloc",
-                    describe: "Flutter Widgets that make it easy to implement the BLoC (Business Logic Component) design pattern. Built to be used with the bloc state management package.",
-                    version: "7.0",
-                    time: "Jul 29, 2021",
-                    href: "bloclibrary.dev",
-                    tagList: [
-                        "Flutter Favorite",
-                        "Null safety"
-                    ]
-                },
-            ]
+        const route = useRouter();
+        const packageList = ref([]);
+        const page = ref(1);
+        const {q} = route.currentRoute.value.query;
+        const searchKey = ref(q);
+        const total = ref(0)
+        
+        function handleEnterDetail(name) {
+            route.push({name: 'packagesDetail', query: {name}})
         }
-    },
-    methods: {
-        handleSearch() {
-            //
-        },
-        handleEnterDetail() {
-            this.$router.push({name: 'packagesDetail'})
+        async function fetchPackageList() {
+            try {
+                const {data} = await window.axios.request({
+                    url: "/webapi/packages",
+                    method: "get",
+                    params: {q: searchKey.value,
+                    // page: page.value
+                    }
+                })
+                packageList.value = data;
+                total.value = data.length;
+            } catch (error) {
+                //
+            }
+        }
+        function handleCurrentChange(page) {
+           page.value = page;
+           fetchPackageList()
+        }
+        function handleSearch(key) {
+            searchKey.value = key;
+            route.push({name: "packages",query: {q: key}})
+            fetchPackageList()
+        }
+        
+        onMounted(() => {
+            fetchPackageList();
+        })
+        return {
+            packageList,
+            searchKey,
+            total,
+            handleSearch,
+            handleEnterDetail,
+            handleCurrentChange
         }
     }
 }
@@ -119,6 +123,7 @@ export default {
         display: flex;
         justify-content: center;
         padding: 20px 0;
+        margin: auto;
     }
   }
   .package-list {
@@ -138,6 +143,7 @@ export default {
                 color: #0175c2;
                 cursor: pointer;
                 font-size: 22px;
+                display: inline-block;
             }
             .version-info {
                 display: flex;

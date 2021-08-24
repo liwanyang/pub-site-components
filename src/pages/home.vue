@@ -19,22 +19,23 @@
             </section>
             <section class="package-list">
                 <div class="flutter-favorites">
-                <h1 class="title">Flutter Favorites</h1>
-                <p class="home-block-context-info">
-                    <span> Some of the packages that demonstrate the </span>
-                    <a href="https://flutter.dev/docs/development/packages-and-plugins/favorites">highest levels of quality</a>
-                    <span>, selected by the Flutter Ecosystem Committee </span>
-                </p>
-                <div class="mini-list">
-                    <div class="mini-list-item" v-for="item in packageList" :key="item.name">
-                    <h3>{{item.name}}</h3>
-                    <p> {{item.describe}}</p>
-                    <div class="icon-href">
-                        <img src="../assets/images/verified-publisher-gray.svg" alt="">
-                        <a href="">{{item.href}}</a>
+                    <h1 class="title">Flutter Favorites</h1>
+                    <p class="home-block-context-info">
+                        <span> Some of the packages that demonstrate the </span>
+                        <a href="https://flutter.dev/docs/development/packages-and-plugins/favorites">highest levels of quality</a>
+                        <span>, selected by the Flutter Ecosystem Committee </span>
+                    </p>
+                    <div class="mini-list">
+                        <div class="mini-list-item" v-for="item in packageList" :key="item.name">
+                        <h3 @click="handleEnterDetail(item.name)">{{item.name}}</h3>
+                        <p> {{item.description}}</p>
+                        <div class="icon-href">
+                            <img src="../assets/images/verified-publisher-gray.svg" alt="">
+                            <a href="">{{item.authors}}</a>
+                        </div>
+                        </div>
                     </div>
-                    </div>
-                </div>
+                    <div class="all-packages"  @click="handleAll">VIEW ALL</div>
                 </div>
             </section>
         </section>
@@ -44,45 +45,69 @@
 <script>
 import Footers from "../components/Footer.vue"
 import Search from "../components/Searchs.vue"
+import {
+  onMounted,
+  ref,
+} from 'vue';
+import { useRouter } from 'vue-router';
 export default {
     components: {
         Footers,
         Search
     },
     setup() {
-        return {
-            searchKey: "",
-            packageList: [
-                {
-                    name: "flutter_bloc",
-                    describe: "Flutter Widgets that make it easy to implement the BLoC (Business Logic Component) design pattern. Built to be used with the bloc state management package.",
-                    href: "bloclibrary.dev"
-                },
-                {
-                    name: "flutter_bloc",
-                    describe: "Flutter Widgets that make it easy to implement the BLoC (Business Logic Component) design pattern. Built to be used with the bloc state management package.",
-                    href: "bloclibrary.dev"
-                },
-                {
-                    name: "flutter_bloc",
-                    describe: "Flutter Widgets that make it easy to implement the BLoC (Business Logic Component) design pattern. Built to be used with the bloc state management package.",
-                    href: "bloclibrary.dev"
-                },
-                {
-                    name: "flutter_bloc",
-                    describe: "Flutter Widgets that make it easy to implement the BLoC (Business Logic Component) design pattern. Built to be used with the bloc state management package.",
-                    href: "bloclibrary.dev"
-                }
-            ]
-        }
-    },
-    methods: {
-        handleSearch(key) {
-            if (key) {
-              this.$router.push({name: "packages",query: {q: key}})
+        const route = useRouter();
+        const packageList = ref([]);
+        const list = ref([]);
+        const searchKey = ref('');
+        async function fetchPackageList() {
+            try {
+                const {data} = await window.axios.request({
+                    url: "/webapi/packages",
+                    method: "get"
+                })
+                packageList.value = data.filter((item, index) => index < 4);
+                list.value = data;
+                handleResize();
+            } catch (error) {
+                //
             }
         }
-    }
+        function handleEnterDetail(name) {
+            route.push({name: 'packagesDetail', query: {name}})
+        }
+        function handleSearch(key) {
+            if (key) {
+              route.push({name: "packages",query: {q: key}})
+            }
+        }
+        function handleAll() {
+            route.push({name: "packages"})
+        }
+        function handleResize() {
+           const clientWidth = window.innerWidth;
+           if (clientWidth >= 1100) {
+               console.log(123);
+                packageList.value = list.value.filter((item, index) => index < 4);
+           } else if (clientWidth > 850) {
+                packageList.value = list.value.filter((item, index) => index < 3);
+           } else {
+                packageList.value = list.value.filter((item, index) => index < 2);
+           }
+
+        }
+        onMounted(() => {
+            fetchPackageList();
+            window.addEventListener("resize", handleResize)
+        })
+        return {
+            searchKey,
+            packageList,
+            handleSearch,
+            handleAll,
+            handleEnterDetail
+        }
+    },
 }
 </script>
 <style lang="scss" scoped>
@@ -138,6 +163,12 @@ export default {
         .flutter-favorites {
             max-width: 10.96rem;
             width: 100%;
+            .all-packages {
+                color: #1967d2;
+                cursor: pointer;
+                text-align: right;
+                font-size: 0.16rem;
+            }
         }
         .title {
             color: #254a76;
@@ -152,44 +183,46 @@ export default {
             }
         }
         .mini-list {
-            height: 200px;
+            height: 2rem;
             display: flex;
+            justify-content: space-around;
             .mini-list-item {
                 background: #fff;
-                border-radius: 4px;
-                box-shadow: 0px 2px 7px 0px rgb(0 0 0 / 30%);
-                padding: 28px 3px 3px 10px;
-                margin-bottom: 10px;
-                min-height: 100px;
-                min-width: 260px;
-                height: 190px;
-                margin: 0px 16px 16px 0px;
+                border-radius: 0.04rem;
+                box-shadow: 0px 0.02rem 0.07rem 0px rgb(0 0 0 / 30%);
+                padding: 0.28rem 0.03rem 0.03rem 0.1rem;
+                margin-bottom: 0.1rem;
+                min-height: 1rem;
+                width: 2.6rem;
+                height: 1.9rem;
+                margin: 0px 0.16rem 0.16rem 0px;
                 box-sizing: border-box;
                 &:hover {
                     background: #fafafa;
-                    box-shadow: 0px 4px 9px 0px rgb(0 0 0 / 40%);
+                    box-shadow: 0px 0.04rem 0.09rem 0px rgb(0 0 0 / 40%);
                 }
                 h3 {
                     color: #1967d2;
-                    font-size: 20px;
+                    font-size: 0.2rem;
                     margin: 0;
                     overflow: hidden;
                     text-overflow: ellipsis;
                     white-space: nowrap;
                     font-weight: normal;
+                    cursor: pointer;
                 }
                 p {
-                    font-size: 14px;
+                    font-size: 0.14rem;
                     overflow: hidden;
-                    height: 73px;
-                    line-height: 18px;
+                    height: 0.73rem;
+                    line-height: 0.18rem;
                 }
                 .icon-href {
-                    font-size: 14px;
+                    font-size: 0.14rem;
                     display: flex;
                     align-items: center;
                     img {
-                        margin-right: 10px;
+                        margin-right: 0.1rem;
                     }
                 }
             }

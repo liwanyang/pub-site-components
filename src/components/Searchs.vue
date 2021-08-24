@@ -5,17 +5,22 @@
     </div>
 </template>
 <script>
+import {ref} from "vue";
 export default {
-    setup() {
+    props: {
+        searchKeys: String
+    },
+    setup(props, { emit }) {
+        const searchKey = ref(props.searchKeys);
+        
+        function handleSearch() {
+            emit("handleSearch", searchKey.value.trim())
+        }
         return {
-           searchKey: "" 
+           searchKey,
+           handleSearch
         }
     },
-    methods: {
-        handleSearch() {
-            this.$emit("handleSearch", this.searchKey.trim())
-        }
-    }
 }
 </script>
 <style lang="scss" scoped>
