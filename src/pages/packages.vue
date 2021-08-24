@@ -15,7 +15,7 @@
                       <p class="describe">{{item.description}}</p>
                       <div class="version-info">
                         <div class="version">v<span></span>{{item.version}}</div>&#x3000;
-                        <div class="time">Updated: {{item.createdAt}}</div>&#x3000;
+                        <div class="time">Updated: {{formartDate(item.createdAt)}}</div>&#x3000;
                         <div class="href">{{item.authors}}</div>&#x3000;
                         <div class="tagList">
                             <div  v-for="ele in item.tag" :key="ele">{{ele}}</div>
@@ -41,6 +41,7 @@ import Search from "../components/Searchs.vue"
 import Footers from "../components/Footer.vue"
 import { onMounted,  ref} from 'vue';
 import { useRouter } from 'vue-router';
+import Moment from "moment"
 export default {
     components: {
         Headers,
@@ -82,6 +83,9 @@ export default {
             route.push({name: "packages",query: {q: key}})
             fetchPackageList()
         }
+        function formartDate(time) {
+            return Moment(time).format('MMMM DD, YYYY')
+        }
         
         onMounted(() => {
             fetchPackageList();
@@ -92,7 +96,8 @@ export default {
             total,
             handleSearch,
             handleEnterDetail,
-            handleCurrentChange
+            handleCurrentChange,
+            formartDate
         }
     }
 }
