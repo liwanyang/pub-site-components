@@ -8,7 +8,7 @@
            </section>
         <section class="main">
            <section class="container package-list">
-              <div class="package-number">RESULTS <span>{{packageList.length}}</span> packages</div>
+              <div class="package-number" v-if="packageList.length">RESULTS <span>{{packageList.length}}</span> packages</div>
               <ul>
                   <li v-for="item in packageList" :key="item.name">
                       <div class="name" @click="handleEnterDetail (item.name)">{{item.name}}</div>
@@ -24,6 +24,7 @@
                   </li>
               </ul>
             <el-pagination
+            v-if="packageList.length"
             background
             layout="prev, pager, next"
             @current-change="handleCurrentChange"

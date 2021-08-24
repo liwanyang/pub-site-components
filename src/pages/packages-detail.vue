@@ -5,7 +5,7 @@
             <section class="main">
                 <h3>{{packageInfo.data.name}}</h3>
                 <div class="version-info">
-                    <div class="time">Published {{packageInfo.data.createdAt}}•</div>&#x3000;
+                    <div class="time">Published {{formartDate(packageInfo.data.createdAt)}}•</div>&#x3000;
                     <div class="href">{{authors}}</div>&#x3000;
                     <div class="tagList">
                         <div v-for="item in packageInfo.data.tag" :key="item">{{item}}</div>
@@ -18,7 +18,7 @@
                           <article class="markdown-body" style="text-align:left" v-html="packageInfo.data.readme"></article>
                         </el-tab-pane>
                         <el-tab-pane label="Changelog" name="changelog">
-                          <article class="markdown-body" style="text-align:left" v-html="packageInfo.data.changelog"></article>
+                          <v-md-preview :text="packageInfo.data.changelog"></v-md-preview>
                         </el-tab-pane>
                         <el-tab-pane label="Versions" name="versions" v-if="packageInfo.data.versions">
                           <el-table
@@ -31,11 +31,19 @@
                             <el-table-column
                                 prop="createdAt"
                                 label="Uploaded">
+                                <template  v-slot="scope">
+                                    {{formartDate(scope.row.createdAt)}}
+                                </template>
                             </el-table-column>
-                            <!-- <el-table-column
-                                prop="address"
-                                label="地址">
-                            </el-table-column> -->
+                            <el-table-column
+                                prop="archiveUrl"
+                                label="">
+                                <template v-slot="scope">
+                                    <a :href="scope.row.archiveUrl">
+                                       <i class="el-icon-download"></i>
+                                    </a>
+                                </template>
+                            </el-table-column>
                             </el-table>
                         </el-tab-pane>
                     </el-tabs>
@@ -47,7 +55,7 @@
                    <p>{{packageInfo.data.description}}</p>
                    
                    <div class="meta-data-list">
-                      <div v-for="item in MetadataList" :key="item" @click="handleReplaceParams(item)">{{item}}</div>
+                      <div v-for="item in MetadataList" :key="item" @click="handleRouterJump(item)">{{item}}</div>
                    </div>
                 </div>
                 <div class="dependencies">
@@ -63,6 +71,7 @@
 </template>
 <script>
 import { onMounted,  ref, reactive, watch } from 'vue';
+import Moment from "moment"
 import { useRouter } from 'vue-router';
 import Headers from "../components/Header.vue"
 import Footers from "../components/Footer.vue"
@@ -100,9 +109,16 @@ export default {
         function handleClickTab(tab) {
            tabActiveName.value = tab.props.name;
         }
+        function handleRouterJump() {
+            const url = `${packageInfo.data.homepage}/issues`
+            window.open(url, '_blank')
+        }
         function handleReplaceParams(name) {
             packageName.value = name
             route.push({name: "packagesDetail",query: {name}})
+        }
+        function formartDate(time) {
+            return Moment(time).format('MMMM DD, YYYY')
         }
         onMounted(() => {
             fetchPackageDetail();
@@ -113,12 +129,10 @@ export default {
             authors,
             handleClickTab,
             handleReplaceParams,
-            dependenciesList: [
-                'async', 'http_parser', 'meta', 'path', 'pedantic'
-            ],
+            handleRouterJump,
+            formartDate,
             MetadataList: [
-                'Repository (GitHub)',
-                'View/report issues'
+                'homepage',
             ]
         }
     }
@@ -208,6 +222,9 @@ export default {
                   }
                 }
             }
+        }
+        .el-icon-download {
+            font-size: 20px;
         }
    }
 </style>
