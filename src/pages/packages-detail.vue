@@ -133,17 +133,24 @@ export default {
            justify-content: space-between;
            flex: auto;
            padding: 0 20px;
+           width: 100%;
+           box-sizing: border-box;
+           @media screen and(max-width:1060px) {
+             flex-wrap: wrap;
+           }
        }
         .main {
             display: flex;
             flex-direction: column;
             flex: auto;
+            width: 100%;
             h3 {
                 font-size: 36px;
                 margin-bottom: 15px;
             }
             .version-info {
                 display: flex;
+                flex-wrap: wrap;
                 align-items: center;
                 font-size: 12px;
                 margin-bottom: 20px;
@@ -156,6 +163,7 @@ export default {
                 .tagList {
                     display: flex;
                     align-items: center;
+                    flex-wrap: wrap;
                     &>div {
                         background: #fff;
                         border: 1px solid #0175c2;

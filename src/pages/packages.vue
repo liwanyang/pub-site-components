@@ -103,13 +103,14 @@ export default {
         height: 100%;
     }
     .container {
-        width: 1096px;
+        max-width: 1096px;
     }
     .main {
         display: flex;
         flex-direction: column;
         align-items: center;
         flex: auto;
+        width: 100%;
     }
   ._banner-bg {
     background: #132030;
@@ -127,6 +128,7 @@ export default {
     }
   }
   .package-list {
+      padding: 0 20px;
     .package-number {
         font-size: 16px;
         margin: 20px 0;
@@ -137,6 +139,7 @@ export default {
     ul {
         list-style-type: none;
         font-size: 16px;
+        padding: 0;
         li {
             margin: 50px 0;
             .name {
@@ -147,6 +150,7 @@ export default {
             }
             .version-info {
                 display: flex;
+                flex-wrap: wrap;
                 align-items: center;
                 font-size: 12px;
                 .version {
