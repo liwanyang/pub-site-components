@@ -14,10 +14,11 @@
                 <div class="content">
                     <el-tabs v-model="tabActiveName" @tab-click="handleClickTab" type="card">
                         <el-tab-pane label="Readme" name="readme">
-                          <div v-html="packageInfo.data.readme"></div>
+                          <v-md-preview :text="packageInfo.data.readme"></v-md-preview>
+                          <article class="markdown-body" style="text-align:left" v-html="packageInfo.data.readme"></article>
                         </el-tab-pane>
                         <el-tab-pane label="Changelog" name="changelog">
-                          <div v-html="packageInfo.data.changelog"></div>
+                          <article class="markdown-body" style="text-align:left" v-html="packageInfo.data.changelog"></article>
                         </el-tab-pane>
                         <el-tab-pane label="Versions" name="versions" v-if="packageInfo.data.versions">
                           <el-table
@@ -130,7 +131,7 @@ export default {
        height: 100%;
        .package-content {
            display: flex;
-           justify-content: space-between;
+           justify-content: center;
            flex: auto;
            padding: 0 20px;
            width: 100%;
@@ -142,8 +143,8 @@ export default {
         .main {
             display: flex;
             flex-direction: column;
-            flex: auto;
             width: 100%;
+            max-width: 1100px;
             h3 {
                 font-size: 36px;
                 margin-bottom: 15px;

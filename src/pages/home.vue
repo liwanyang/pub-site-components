@@ -87,7 +87,6 @@ export default {
         function handleResize() {
            const clientWidth = window.innerWidth;
            if (clientWidth >= 1100) {
-               console.log(123);
                 packageList.value = list.value.filter((item, index) => index < 4);
            } else if (clientWidth > 850) {
                 packageList.value = list.value.filter((item, index) => index < 3);

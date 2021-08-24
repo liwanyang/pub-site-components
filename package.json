@@ -8,9 +8,12 @@
     "lint": "vue-cli-service lint"
   },
   "dependencies": {
+    "@kangc/v-md-editor": "^2.3.8",
+    "add": "^2.0.6",
     "core-js": "^3.6.5",
     "element-plus": "^1.0.2-beta.28",
     "element-ui": "^2.15.5",
+    "mavon-editor": "^2.9.1",
     "sass": "^1.38.0",
     "sass-loader": "^10.0.0-rc.0",
     "vue": "^3.0.0",
